@@ -3,16 +3,20 @@ import { UserModule } from './modules/user/user.module'
 import { CacheModule } from '@nestjs/cache-manager'
 import { redisStore } from 'cache-manager-redis-yet'
 import { RoleModule } from './modules/role/role.module'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     CacheModule.registerAsync({
       isGlobal: true,
-      useFactory: async () => ({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
         store: await redisStore({
           socket: {
-            host: 'localhost',
-            port: 6379,
+            host: configService.getOrThrow('REDIS_HOST') ?? 'localhost', // Usa REDIS_HOST desde .env
+            port: +(configService.getOrThrow<number>('REDIS_PORT') ?? 6379), // Usa REDIS_PORT desde .env
           },
         }),
       }),

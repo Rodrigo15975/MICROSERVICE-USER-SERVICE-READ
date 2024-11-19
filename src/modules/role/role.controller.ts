@@ -11,8 +11,9 @@ export class RoleController {
 
   @EventPattern(ROLE_CREATE)
   create(@Payload() createRoleDto: CreateRoleDto) {
-    return { createRoleDto }
-    this.roleService.create(createRoleDto)
+    console.log({ createRoleDto })
+
+    return this.roleService.create(createRoleDto)
   }
   @MessagePattern(ROLE_FIND_ALL)
   findAll() {

@@ -4,17 +4,25 @@ import { RoleController } from './role.controller'
 import { SharedModule } from 'src/shared/shared.module'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { proxyName } from './common/proxyName/proxyName'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 
 @Module({
   imports: [
-    ClientsModule.register([
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    ClientsModule.registerAsync([
       {
+        imports: [ConfigModule],
         name: proxyName.name,
-        transport: Transport.REDIS,
-        options: {
-          host: 'localhost',
-          port: 6379,
-        },
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.REDIS,
+          options: {
+            host: configService.getOrThrow('REDIS_HOST'),
+            port: configService.getOrThrow('REDIS_PORT'),
+          },
+        }),
+        inject: [ConfigService],
       },
     ]),
     SharedModule,

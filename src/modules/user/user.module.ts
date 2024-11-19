@@ -12,7 +12,7 @@ import { UserController } from './user.controller'
         name: proxyName.name_read,
         transport: Transport.REDIS,
         options: {
-          host: 'localhost',
+          host: 'redis',
           port: 6379,
         },
       },

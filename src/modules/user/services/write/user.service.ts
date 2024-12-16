@@ -57,9 +57,12 @@ export class UserServiceWrite implements TypeUserServiceRead {
 
   async findAll(): Promise<User[] | HttpException> {
     try {
-      return await this.schemaUser.find().sort({
-        createdAt: -1,
-      })
+      return await this.schemaUser
+        .find()
+        .sort({
+          createdAt: -1,
+        })
+        .select('-auditoria')
     } catch (error) {
       console.log(error, 'Error al obtener la lista de los usuarios (MONGODB)')
       return new InternalServerErrorException(error)

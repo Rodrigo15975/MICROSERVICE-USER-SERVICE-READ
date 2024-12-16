@@ -17,7 +17,10 @@ export class RoleService {
   ) {}
 
   async create(data: CreateRoleDto) {
+    const key = `roles:find-all`
+
     await this.schemaRole.create(data)
+    await this.cacheRole.del(key)
   }
 
   async findAll() {

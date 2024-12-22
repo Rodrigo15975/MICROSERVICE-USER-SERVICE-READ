@@ -21,6 +21,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
             host: configService.getOrThrow('REDIS_HOST'),
             port: configService.getOrThrow('REDIS_PORT'),
           },
+          retryAttempts: 10,
+          retryDelay: 10000,
+          reconnectOnError(err: Error) {
+            const targetError = 'READONLY'
+            console.log(err)
+            if (err.message.includes(targetError)) return true
+
+            return true
+          },
         }),
         inject: [ConfigService],
       },

@@ -13,6 +13,15 @@ async function bootstrap() {
     options: {
       host: process.env.REDIS_HOST ?? 'localhost',
       port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
+      retryAttempts: 10,
+      retryDelay: 10000,
+      reconnectOnError(err) {
+        const targetError = 'READONLY'
+        console.log(err)
+        if (err.message.includes(targetError)) return true
+
+        return true
+      },
     },
   })
 

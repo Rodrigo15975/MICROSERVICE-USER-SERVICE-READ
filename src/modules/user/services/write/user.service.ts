@@ -1,11 +1,9 @@
-import {
-  HttpException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { CacheService } from 'src/cache/cache.service'
 import { TypeUserServiceRead } from 'types/type-user'
+import { KEY_CACHE_USER } from '../../common/key-cache.user'
 import { CreateUserDtoWrite } from '../../dto/create-user.dto'
 import { UpdateUserDtoRead } from '../../dto/update-user.dto'
 import { User } from '../../entities/user-schema'
@@ -14,6 +12,7 @@ import { User } from '../../entities/user-schema'
 export class UserServiceWrite implements TypeUserServiceRead {
   constructor(
     @InjectModel(User.name) private readonly schemaUser: Model<User>,
+    private readonly cacheService: CacheService,
   ) {}
 
   async findOne(id: number): Promise<User | null> {
@@ -21,12 +20,13 @@ export class UserServiceWrite implements TypeUserServiceRead {
       .findOne({
         id,
       })
-      .select('-password')
+      .select('-password -auditoria')
   }
 
   async create(data: CreateUserDtoWrite): Promise<void> {
     try {
       await this.schemaUser.create(data)
+      await this.cacheService.delete(KEY_CACHE_USER)
     } catch (error) {
       console.log(error)
       throw new InternalServerErrorException(error)
@@ -37,6 +37,7 @@ export class UserServiceWrite implements TypeUserServiceRead {
       await this.schemaUser.findOneAndDelete({
         id,
       })
+      await this.cacheService.delete(KEY_CACHE_USER)
     } catch (error) {
       console.log(error)
       throw new InternalServerErrorException(error)
@@ -50,22 +51,28 @@ export class UserServiceWrite implements TypeUserServiceRead {
         },
         data,
       )
+      await this.cacheService.delete(KEY_CACHE_USER)
     } catch (error) {
       throw new InternalServerErrorException(error, error.message)
     }
   }
 
-  async findAll(): Promise<User[] | HttpException> {
+  async findAll(): Promise<User[]> {
     try {
-      return await this.schemaUser
+      const findAllUserCache =
+        await this.cacheService.get<User[]>(KEY_CACHE_USER)
+      if (findAllUserCache) return findAllUserCache
+      const findAllUser = await this.schemaUser
         .find()
         .sort({
           createdAt: -1,
         })
         .select('-auditoria')
+      await this.cacheService.set(KEY_CACHE_USER, findAllUser, '10m')
+      return findAllUser
     } catch (error) {
       console.log(error, 'Error al obtener la lista de los usuarios (MONGODB)')
-      return new InternalServerErrorException(error)
+      throw new InternalServerErrorException(error)
     }
   }
 }

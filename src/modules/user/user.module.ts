@@ -5,9 +5,11 @@ import { proxyName } from './common/proxyName/proxyName'
 import { UserServiceWrite } from './services/write/user.service'
 import { UserController } from './user.controller'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import { CacheModule } from 'src/cache/cache.module'
 
 @Module({
   imports: [
+    CacheModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -38,6 +40,5 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
   ],
   controllers: [UserController],
   providers: [UserServiceWrite],
-  exports: [],
 })
 export class UserModule {}

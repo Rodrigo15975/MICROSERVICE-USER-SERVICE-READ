@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@keyv/redis": "^4.2.0",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.3.0",
@@ -33,6 +34,7 @@
     "cache-manager": "^5.7.6",
     "cache-manager-redis-store": "^3.0.1",
     "cache-manager-redis-yet": "^5.1.5",
+    "cacheable": "^1.8.7",
     "ioredis": "^5.4.1",
     "mongoose": "^8.6.3",
     "redis": "^4.7.0",

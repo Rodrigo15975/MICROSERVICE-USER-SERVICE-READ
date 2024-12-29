@@ -20,7 +20,7 @@ export class UserServiceWrite implements TypeUserServiceRead {
       .findOne({
         id,
       })
-      .select('-password -auditoria')
+      .select('-password -auditoria -__v -updatedAt -_id')
   }
 
   async create(data: CreateUserDtoWrite): Promise<void> {
@@ -64,10 +64,12 @@ export class UserServiceWrite implements TypeUserServiceRead {
       if (findAllUserCache) return findAllUserCache
       const findAllUser = await this.schemaUser
         .find()
+        .lean()
         .sort({
           createdAt: -1,
         })
-        .select('-auditoria')
+        .select(' -password  -__v -updatedAt -_id')
+        .exec()
       await this.cacheService.set(KEY_CACHE_USER, findAllUser, '10m')
       return findAllUser
     } catch (error) {

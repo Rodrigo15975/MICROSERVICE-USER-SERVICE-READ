@@ -3,6 +3,7 @@ import { AppModule } from './app.module'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as dotenv from 'dotenv'
+import { Logger } from '@nestjs/common'
 dotenv.config()
 
 async function bootstrap() {
@@ -35,8 +36,16 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('microservice-user-service-read', app, document)
+  const PORT = Number(process.env.PORT) || 4001
 
   await app.startAllMicroservices()
-  await app.listen(4001)
+  await app.listen(PORT, () => {
+    if (process.env.NODE_ENV === 'development')
+      return Logger.verbose(
+        `Servidor escuchando en el puerto ${PORT} en modo ${process.env.NODE_ENV}`,
+      )
+
+    Logger.log(`Servidor iniciado en el puerto ${PORT}`)
+  })
 }
 bootstrap()

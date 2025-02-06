@@ -12,6 +12,8 @@ import { CacheModule } from 'src/cache/cache.module'
     CacheModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath:
+        process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
     }),
     ClientsModule.registerAsync([
       {

@@ -4,8 +4,10 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as dotenv from 'dotenv'
 import { Logger } from '@nestjs/common'
-dotenv.config()
 
+dotenv.config({
+  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
+})
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
@@ -42,10 +44,10 @@ async function bootstrap() {
   await app.listen(PORT, () => {
     if (process.env.NODE_ENV === 'development')
       return Logger.verbose(
-        `Servidor escuchando en el puerto ${PORT} en modo ${process.env.NODE_ENV}`,
+        `Listen Service in port ${PORT} in mode ${process.env.NODE_ENV}`,
       )
 
-    Logger.log(`Servidor iniciado en el puerto ${PORT}`)
+    Logger.log(`Listen Service in port ${PORT}`, 'Mode: ', process.env.NODE_ENV)
   })
 }
 bootstrap()

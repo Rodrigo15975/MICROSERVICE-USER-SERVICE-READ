@@ -15,8 +15,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
       useFactory: async (configService: ConfigService) => ({
         store: await redisStore({
           socket: {
-            host: configService.getOrThrow('REDIS_HOST') ?? 'localhost', // Usa REDIS_HOST desde .env
-            port: +(configService.getOrThrow<number>('REDIS_PORT') ?? 6379), // Usa REDIS_PORT desde .env
+            host: configService.getOrThrow('REDIS_HOST') ?? 'localhost',
+            port: +(configService.getOrThrow<number>('REDIS_PORT') ?? 6379),
           },
         }),
       }),

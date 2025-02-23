@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config'
       useFactory: async (configService: ConfigService) => {
         const secondary = new KeyvRedis({
           url: configService.getOrThrow('KEY_URL_REDIS'),
+          password: configService.getOrThrow('REDIS_PASSWORD'),
         })
         return new Cacheable({
           secondary,

@@ -17,7 +17,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
           socket: {
             host: configService.getOrThrow('REDIS_HOST') ?? 'localhost',
             port: +(configService.getOrThrow<number>('REDIS_PORT') ?? 6379),
+            tls: true,
           },
+          password: configService.getOrThrow('REDIS_PASSWORD'),
         }),
       }),
     }),

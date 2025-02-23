@@ -14,8 +14,13 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
     options: {
-      host: process.env.REDIS_HOST ?? 'localhost',
-      port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
+      port: Number(process.env.REDIS_PORT) || 6379,
+      host: process.env.REDIS_HOST,
+      password: process.env.REDIS_PASSWORD,
+      tls: {
+        servername: process.env.REDIS_HOST,
+      },
+      autoResubscribe: true,
       retryAttempts: 10,
       retryDelay: 10000,
       reconnectOnError(err) {

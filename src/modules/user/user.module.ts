@@ -24,6 +24,10 @@ import { CacheModule } from 'src/cache/cache.module'
           options: {
             host: configService.getOrThrow('REDIS_HOST'),
             port: configService.getOrThrow('REDIS_PORT'),
+            password: configService.getOrThrow('REDIS_PASSWORD'),
+            tls: {
+              servername: configService.getOrThrow('REDIS_HOST'),
+            },
             retryAttempts: 10,
             retryDelay: 10000,
             reconnectOnError(err) {
